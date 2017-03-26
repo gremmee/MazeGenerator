@@ -109,7 +109,7 @@ public class Cell {
         int x = this.i * w;
         int y = this.j * w;
 
-        aGraphics.setColor(new Color(255, 0, 0, 127));
+        aGraphics.setColor(new Color(0, 255, 0, 127));
         aGraphics.fillRect(x, y, w, w);
     }
 
