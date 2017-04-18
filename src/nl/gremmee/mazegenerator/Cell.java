@@ -1,29 +1,34 @@
 package nl.gremmee.mazegenerator;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Cell {
 
-    boolean visited = false;
-    private int printWidth = MazeGenerator.w;
-    private int printHeight = MazeGenerator.w;
-    boolean[] walls;
+    public boolean visited = false;
+    private int printWidth = MazeGenerator.defaultCell;
+    private int printHeight = MazeGenerator.defaultCell;
+    public boolean[] walls;
 
-    int i;
-    int j;
+    public int i;
+    public int j;
 
     private ID id;
 
-    private int index;
+    private boolean startCell;
+    private boolean endCell;
 
     private Random random = new Random();
 
-    public Cell(int aIndex, int aI, int aJ, ID aId) {
-        this.index = aIndex;
+    public Cell(int aIndex, int aI, int aJ, boolean aStartCell, boolean aEndCell) {
+        this.setStartCell(aStartCell);
+        this.setEndCell(aEndCell);
         this.i = aI;
         this.j = aJ;
         this.walls = new boolean[] { true, true, true, true };
@@ -69,6 +74,12 @@ public class Cell {
         }
 
         aGraphics.setColor(Color.black);
+        Font font = new Font("Arial", 0, h / 3);
+        if (this.endCell) {
+            drawCenteredString(aGraphics, "Eind", new Rectangle(x, y, w, h), font);
+        } else if (this.startCell) {
+            drawCenteredString(aGraphics, "Start", new Rectangle(x, y, w, h), font);
+        }
         if (this.walls[0]) {
             // top
             aGraphics.drawLine(x, y, x + w, y);
@@ -137,4 +148,35 @@ public class Cell {
         this.printHeight = pHeight;
 
     }
+
+    public boolean isStartCell() {
+        return startCell;
+    }
+
+    public void setStartCell(boolean startCell) {
+        this.startCell = startCell;
+    }
+
+    public boolean isEndCell() {
+        return endCell;
+    }
+
+    public void setEndCell(boolean endCell) {
+        this.endCell = endCell;
+    }
+
+    protected void drawCenteredString(Graphics aGraphics, String aText, Rectangle aRectangle, Font aFont) {
+        // Get the FontMetrics
+        FontMetrics metrics = aGraphics.getFontMetrics(aFont);
+        // Determine the X coordinate for the text
+        int x = (aRectangle.width - metrics.stringWidth(aText)) / 2;
+        // Determine the Y coordinate for the text (note we add the ascent, as
+        // in java 2d 0 is top of the screen)
+        int y = ((aRectangle.height - metrics.getHeight()) / 2) + metrics.getAscent();
+        // Set the font
+        aGraphics.setFont(aFont);
+        // Draw the String
+        aGraphics.drawString(aText, x + aRectangle.x, y + aRectangle.y);
+    }
+
 }

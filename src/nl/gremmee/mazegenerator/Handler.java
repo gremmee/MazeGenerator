@@ -28,10 +28,10 @@ public class Handler implements Printable {
         return this.object.get(aIndex);
     }
 
-    public int getStars() {
+    public int getCells() {
         int result = 0;
-        for (Cell fireObject : object) {
-            if (fireObject instanceof Cell) {
+        for (Cell cell : object) {
+            if (cell instanceof Cell) {
                 result++;
             }
         }

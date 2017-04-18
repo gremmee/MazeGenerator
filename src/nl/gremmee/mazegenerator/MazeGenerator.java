@@ -20,37 +20,27 @@ import javax.print.attribute.standard.PrinterResolution;
 public class MazeGenerator extends Canvas implements Runnable {
     public static final int WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     public static final int HEIGHT = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-    private static final int NUM_STARS = WIDTH;
-
-    public static int speed = 1;
-
     public static int cols;
     public static int rows;
     public static Handler handler;
-
-    public static int w = 30;
-
-    Cell current;
-
-    Cell[] grid;
-
-    Stack<Cell> stack;
-
+    public static int defaultCell = 50;
+    private Cell current;
+    private Cell[] grid;
+    private Stack<Cell> stack;
     private boolean running = false;
     private int frames = 0;
-
     private Thread thread;
 
     public MazeGenerator() {
         handler = new Handler();
-        cols = Math.floorDiv(WIDTH, w);
-        rows = Math.floorDiv(HEIGHT, w);
+        cols = Math.floorDiv(WIDTH, defaultCell);
+        rows = Math.floorDiv(HEIGHT, defaultCell);
         grid = new Cell[cols * rows];
         stack = new Stack<>();
 
         for (int j = 0; j < rows; j++) {
             for (int i = 0; i < cols; i++) {
-                handler.addObject(new Cell(i + (j * cols), i, j, ID.Cell));
+                handler.addObject(new Cell(i + (j * cols), i, j, (j == 0 && i == 0), (j == rows - 1 && i == cols - 1)));
             }
         }
 
@@ -90,7 +80,7 @@ public class MazeGenerator extends Canvas implements Runnable {
                         set.add(MediaSizeName.ISO_A4);
                         PrinterResolution pr = new PrinterResolution((int) (dpi), (int) (dpi), ResolutionSyntax.DPI);
                         set.add(pr);
-                        set.add(new MediaPrintableArea(2, 2, 210 - 4, 297 - 4, MediaPrintableArea.MM));
+                        set.add(new MediaPrintableArea(4, 4, 210 - 4, 297 - 4, MediaPrintableArea.MM));
                         job.setJobName("Maze");
                         job.print();
                     } catch (PrinterException e) {
@@ -113,8 +103,8 @@ public class MazeGenerator extends Canvas implements Runnable {
 
             if ((System.currentTimeMillis() - timer) > 1000) {
                 timer += 1000;
-                int stars = handler.getStars();
-                System.out.println("W x H : " + WIDTH + " x " + HEIGHT + " FPS: " + frames + " : Cells " + stars + "|"
+                int cells = handler.getCells();
+                System.out.println("W x H : " + WIDTH + " x " + HEIGHT + " FPS: " + frames + " : Cells " + cells + "|"
                         + cols + " " + rows + "|");
                 frames = 0;
             }
