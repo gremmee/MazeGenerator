@@ -9,7 +9,8 @@ import java.util.Random;
 public class Cell {
 
     boolean visited = false;
-
+    private int printWidth = MazeGenerator.w;
+    private int printHeight = MazeGenerator.w;
     boolean[] walls;
 
     int i;
@@ -57,13 +58,14 @@ public class Cell {
     }
 
     public void doRender(Graphics aGraphics) {
-        int w = MazeGenerator.w;
+        int w = this.printWidth;
+        int h = this.printHeight;
         int x = this.i * w;
-        int y = this.j * w;
+        int y = this.j * h;
 
         if (visited) {
             aGraphics.setColor(new Color(255, 255, 255, 15));
-            aGraphics.fillRect(x, y, w, w);
+            aGraphics.fillRect(x, y, w, h);
         }
 
         aGraphics.setColor(Color.black);
@@ -73,15 +75,15 @@ public class Cell {
         }
         if (this.walls[1]) {
             // right
-            aGraphics.drawLine(x + w, y, x + w, y + w);
+            aGraphics.drawLine(x + w, y, x + w, y + h);
         }
         if (this.walls[2]) {
             // bottom
-            aGraphics.drawLine(x + w, y + w, x, y + w);
+            aGraphics.drawLine(x + w, y + h, x, y + h);
         }
         if (this.walls[3]) {
             // left
-            aGraphics.drawLine(x, y + w, x, y);
+            aGraphics.drawLine(x, y + h, x, y);
         }
     }
 
@@ -105,12 +107,13 @@ public class Cell {
     }
 
     public void highlight(Graphics aGraphics) {
-        int w = MazeGenerator.w;
+        int w = this.printWidth;
+        int h = this.printHeight;
         int x = this.i * w;
-        int y = this.j * w;
+        int y = this.j * h;
 
         aGraphics.setColor(new Color(255, 0, 0, 127));
-        aGraphics.fillRect(x, y, w, w);
+        aGraphics.fillRect(x, y, w, h);
     }
 
     public void render(Graphics aGraphics) {
@@ -123,5 +126,15 @@ public class Cell {
 
     public void update() {
         doUpdate();
+    }
+
+    public void setPrintWidth(int pWidth) {
+        this.printWidth = pWidth;
+
+    }
+
+    public void setPrintHeight(int pHeight) {
+        this.printHeight = pHeight;
+
     }
 }

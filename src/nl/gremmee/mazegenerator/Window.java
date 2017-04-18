@@ -12,6 +12,7 @@ public class Window extends Canvas {
 
     public static int x;
     public static int y;
+    public static boolean printMaze = false;
 
     public Window(int aWidth, int aHeight, String aTitle, MazeGenerator aMain) {
         JFrame frame = new JFrame(aTitle);
@@ -25,7 +26,13 @@ public class Window extends Canvas {
         aMain.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.exit(0);
+                if (MouseEvent.BUTTON1 == e.getButton()) {
+                    printMaze = true;
+                } else if (MouseEvent.BUTTON2 == e.getButton()) {
+                    // Nothing
+                } else if (MouseEvent.BUTTON3 == e.getButton()) {
+                    System.exit(0);
+                }
             }
         });
 
@@ -43,6 +50,10 @@ public class Window extends Canvas {
         frame.setVisible(true);
 
         aMain.start();
+    }
+
+    public static boolean getPrintMaze() {
+        return printMaze;
     }
 
     public static int getMouseX() {

@@ -5,7 +5,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.image.BufferStrategy;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.Stack;
+
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.ResolutionSyntax;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.PrinterResolution;
 
 public class MazeGenerator extends Canvas implements Runnable {
     public static final int WIDTH = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -62,6 +72,33 @@ public class MazeGenerator extends Canvas implements Runnable {
         long timer = System.currentTimeMillis();
         frames = 0;
         while (running) {
+            if (Window.getPrintMaze()) {
+                PrinterJob job = PrinterJob.getPrinterJob();
+                double dpi = 300.0;
+                double cmPx300 = dpi / 2.54;
+                Paper paper = new Paper();
+                paper.setSize(21.3 * cmPx300, 29.7 * cmPx300);
+                paper.setImageableArea(0, 0, 21.3 * cmPx300, 29.7 * cmPx300);
+                PageFormat format = new PageFormat();
+                format.setOrientation(PageFormat.LANDSCAPE);
+                format.setPaper(paper);
+                // Assign a new print renderer and the paper size of our choice !
+                job.setPrintable(handler, format);
+                if (job.printDialog()) {
+                    try {
+                        HashPrintRequestAttributeSet set = new HashPrintRequestAttributeSet();
+                        set.add(MediaSizeName.ISO_A4);
+                        PrinterResolution pr = new PrinterResolution((int) (dpi), (int) (dpi), ResolutionSyntax.DPI);
+                        set.add(pr);
+                        set.add(new MediaPrintableArea(2, 2, 210 - 4, 297 - 4, MediaPrintableArea.MM));
+                        job.setJobName("Maze");
+                        job.print();
+                    } catch (PrinterException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.exit(0);
+            }
             long now = System.nanoTime();
             delta += (now - lastTime) / ns;
             lastTime = now;
@@ -77,11 +114,13 @@ public class MazeGenerator extends Canvas implements Runnable {
             if ((System.currentTimeMillis() - timer) > 1000) {
                 timer += 1000;
                 int stars = handler.getStars();
-                System.out.println("W x H : " + WIDTH + " x " + HEIGHT + " FPS: " + frames + " : Cells " + stars);
+                System.out.println("W x H : " + WIDTH + " x " + HEIGHT + " FPS: " + frames + " : Cells " + stars + "|"
+                        + cols + " " + rows + "|");
                 frames = 0;
             }
         }
         stop();
+
     }
 
     public synchronized void start() {
